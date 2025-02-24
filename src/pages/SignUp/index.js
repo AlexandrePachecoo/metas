@@ -1,7 +1,8 @@
-import React from "react";
+import { useState } from "react";
 import { View, Text, StyleSheet, TextInput, TouchableOpacity } from "react-native";
 import AntDesign from '@expo/vector-icons/AntDesign';
-
+import { auth } from '../../firebaseConnection'
+import { createUserWithEmailAndPassword } from "firebase/auth";
 import { useNavigation } from '@react-navigation/native';
 
 
@@ -9,6 +10,22 @@ import { useNavigation } from '@react-navigation/native';
 export default function SignIn() {
 
     const navigation = useNavigation()
+    const [nome, setNome] = useState('')
+    const [email, setEmail] = useState('')
+    const [senha, setSenha] = useState('')
+    const [mensagemErro,setMensagemErro] = useState('')
+
+
+    async function criarUsuario() {
+        if (senha.length < 6) {
+            setMensagemErro('A senha deve ter pelo menos 6 caracteres.');
+          } else{
+            setMensagemErro('');
+            const user = await createUserWithEmailAndPassword(auth, email, senha)
+
+          }
+    }
+
     return (
         <View style={styles.container}>
             <View style={styles.box}>
@@ -17,20 +34,36 @@ export default function SignIn() {
 
                 <View style={styles.input}>
                     <AntDesign name="user" size={25} color="#000" />
-                    <TextInput style={styles.boxInput} placeholder="Nome:" />
+                    <TextInput
+                        style={styles.boxInput}
+                        placeholder="Nome:"
+                        value={nome}
+                        onChangeText={(text)=>setNome(text)}
+                    />
                 </View>
 
                 <View style={styles.input}>
                     <AntDesign name="mail" size={25} color="#000" />
-                    <TextInput style={styles.boxInput} placeholder="Digite seu email:" />
+                    <TextInput
+                        style={styles.boxInput}
+                        placeholder="Digite seu email:"
+                        value={email}
+                        onChangeText={(text)=>setEmail(text)}
+                    />
                 </View>
 
                 <View style={styles.input}>
                     <AntDesign name="lock" size={25} color="#000" />
-                    <TextInput style={styles.boxInput} placeholder="Digite sua senha:" />
+                    <TextInput
+                        style={styles.boxInput}
+                        placeholder="Digite sua senha:"
+                        value={senha}
+                        onChangeText={(text)=>setSenha(text)}
+                    />
                 </View>
+               <Text style={{ color: 'red', marginTop: 10 }}>{mensagemErro}</Text> 
 
-                <TouchableOpacity style={styles.btnEntrar}>
+                <TouchableOpacity style={styles.btnEntrar} onPress={criarUsuario}>
                     <Text style={styles.txtEntrar}>Criar conta</Text>
                 </TouchableOpacity>
 
@@ -89,5 +122,5 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         color: "#fff"
     },
-   
+
 })

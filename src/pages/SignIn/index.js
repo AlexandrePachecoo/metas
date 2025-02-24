@@ -1,31 +1,56 @@
-import React from "react";
+import { useState } from "react";
 import { View, Text, StyleSheet, TextInput, TouchableOpacity } from "react-native";
 import AntDesign from '@expo/vector-icons/AntDesign';
-
+import { auth } from '../../firebaseConnection'
+import { signInWithEmailAndPassword } from "firebase/auth";
 import { useNavigation } from '@react-navigation/native';
-
 
 
 export default function SignIn() {
 
     const navigation = useNavigation()
+    const [email, setEmail] = useState('')
+    const [senha, setSenha] = useState('')
+    const [mensagemErro, setMensagemErro] = useState('')
+
+     function login() {
+        signInWithEmailAndPassword(auth, email, senha)
+        .then((user) => {console.log(user)}
+    )
+        .catch( ()=> {setMensagemErro("email ou senha incorreto!")} )
+    }
+
     return (
         <View style={styles.container}>
             <View style={styles.box}>
                 <Text style={styles.titulo}>Bem vindo de volta!</Text>
+
                 <View style={styles.input}>
                     <AntDesign name="user" size={25} color="#000" />
-                    <TextInput style={styles.boxInput} placeholder="Digite seu email:" />
+                    <TextInput
+                        style={styles.boxInput}
+                        placeholder="Digite seu email:"
+                        value={email}
+                        onChangeText={(text) => setEmail(text)}
+                    />
                 </View>
+
                 <View style={styles.input}>
                     <AntDesign name="lock" size={25} color="#000" />
-                    <TextInput style={styles.boxInput} placeholder="Digite sua senha:" />
+                    <TextInput
+                        style={styles.boxInput}
+                        placeholder="Digite sua senha:"
+                        value={senha}
+                        onChangeText={(text) => setSenha(text)}
+                    />
                 </View>
+
                 <TouchableOpacity style={styles.esqueceu}>
                     <Text>Esqueceu sua senha?</Text>
                 </TouchableOpacity>
+               <Text style={{ color: 'red', marginTop: 10 }}>{mensagemErro}</Text> 
 
-                <TouchableOpacity style={styles.btnEntrar}>
+                <TouchableOpacity style={styles.btnEntrar} onPress={login}>
                     <Text style={styles.txtEntrar}>Entrar</Text>
                 </TouchableOpacity>
 
