@@ -1,17 +1,28 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { View, Text, StyleSheet, TextInput, TouchableOpacity } from "react-native";
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { auth } from '../../firebaseConnection'
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword, onAuthStateChanged} from "firebase/auth";
 import { useNavigation } from '@react-navigation/native';
 
 
 export default function SignIn() {
 
     const navigation = useNavigation()
+    const [user, setUser] = useState(false)
     const [email, setEmail] = useState('')
     const [senha, setSenha] = useState('')
     const [mensagemErro, setMensagemErro] = useState('')
+    
+
+    useEffect(() => {
+        const unsub = onAuthStateChanged(auth, (user) =>{
+            if(user){
+                setUser(true)
+            }
+        })
+    })
+
 
      function login() {
         signInWithEmailAndPassword(auth, email, senha)
