@@ -1,17 +1,20 @@
-import React, { useTransition } from "react";
+import React, { useTransition, useContext} from "react";
 import {View, Text, ActivityIndicator} from "react-native";
 import {onAuthStateChanged} from "firebase/auth";
-import {auth} from "../firebaseConnection"
+import {auth} from "../firebaseConnection";
+import {AuthContext} from "../contexts/auth";
+
 
 import AuthRoutes from "./auth.routes"
 
 function Routes(){
 const loading = false;
-const signed = false;
 
+
+const {user, setUser} = useContext(AuthContext)
 
 return(
-    signed ? <View><Text>Ola mundo</Text></View> : <AuthRoutes/>
+    user.signed ? <View><Text>Ola mundo</Text></View> : <AuthRoutes/>
 )
 }
 
