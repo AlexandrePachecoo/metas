@@ -1,23 +1,31 @@
 import React from "react";
-import { createNativeStackNavigator} from "@react-navigation/native-stack";
+import { createBottomTabNavigator} from "@react-navigation/bottom-tabs";
 
 import Home from "../pages/Home";
+import Calendario from "../pages/Calendario";
 
-const AppStack = createNativeStackNavigator();
+const AppTab = createBottomTabNavigator();
 
 function AppRoutes() {
     return (
-        <AppStack.Navigator>
-            <AppStack.Screen
+        <AppTab.Navigator>
+            <AppTab.Screen
             name="Home"
             component={Home}
             options={{
                 headerShown: false,
-                statusBarStyle: "dark"
+               
+            }}
+            />
+            <AppTab.Screen
+            name="Calendario"
+            component={Calendario}
+            options={{
+                headerShown: false,
             }}
             />
 
-        </AppStack.Navigator>
+        </AppTab.Navigator>
     )
 }
 
