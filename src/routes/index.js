@@ -5,7 +5,8 @@ import {auth} from "../firebaseConnection";
 import {AuthContext} from "../contexts/auth";
 
 
-import AuthRoutes from "./auth.routes"
+import AuthRoutes from "./auth.routes";
+import AppRoutes from "./app.routes";
 
 function Routes(){
 const loading = false;
@@ -14,7 +15,7 @@ const loading = false;
 const {user, setUser} = useContext(AuthContext)
 
 return(
-    user.signed ? <View><Text>Ola mundo</Text></View> : <AuthRoutes/>
+    user.signed ? <AppRoutes/> : <AuthRoutes/>
 )
 }
 
