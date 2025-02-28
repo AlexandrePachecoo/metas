@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import Semana from "../../components/Semana";
-import Tarefas from "../../components/Tarefas";
+import Tarefas from "../../components/tarefas";
 
 export default function Home() {
     return (

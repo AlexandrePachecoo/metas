@@ -40,12 +40,15 @@ export default function Tarefas() {
                             <Text style={styles.nome}>{item.nome}</Text>
                             <Text style={styles.hora}>{item.hora} • {item.vezes}</Text>
                         </View>
-
-                        <Checkbox
-                            status={checked[item.id] ? "checked" : "unchecked"}
-                            onPress={() => handleCheck(item.id)}
-                        />
-
+                       
+                            <Checkbox
+                                status={checked[item.id] ? "checked" : "unchecked"}
+                                onPress={() => handleCheck(item.id)}
+                                style={styles.checkbox}
+                                color="#fff" // Cor quando marcado
+                                uncheckedColor="#fff" // Cor quando desmarcado
+                            />
+                        
 
                     </View>
                 )}
@@ -59,8 +62,6 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         height: 200,
-
-
     },
     tasks: {
         flexDirection: "row",
@@ -89,4 +90,11 @@ const styles = StyleSheet.create({
     texts: {
         marginBottom: 20,
     },
+    checkbox: {
+        backgroundColor: "#fff",
+        
+    },
+    checked: {
+        backgroundColor: "#fff",
+    }
 })
