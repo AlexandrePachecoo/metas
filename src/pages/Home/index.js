@@ -7,7 +7,8 @@ export default function Home() {
         <View style={styles.container}>
                 <Semana/>
                 <View style={styles.titulos}>
-                    <Text>Tarefas:</Text>
+                    <Text style={styles.tasks}>Tarefas:</Text>
+                    <Text>0/4 concluido</Text>
                 </View>
             
         </View>
@@ -19,10 +20,12 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         justifyContent: "center",
-        alignItems: "center"
     },
     titulos: {
-        backgroundColor: "#000",
+        flexDirection: "row",
+        justifyContent: "space-between",
     },
+    tasks: {
+    }
     
 })

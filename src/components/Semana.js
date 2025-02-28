@@ -44,6 +44,8 @@ const styles = StyleSheet.create({
   container: {
     position: "absolute",
     top: 0,
+    left: 30,
+    right: 30,
     marginTop: 27,
   },
   semana: {
