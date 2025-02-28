@@ -5,10 +5,13 @@ import Semana from "../../components/Semana";
 export default function Home() {
     return (
         <View style={styles.container}>
-            <View style={styles.semana}>
-                <Semana />
-            </View>
+                <Semana/>
+                <View style={styles.titulos}>
+                    <Text>Tarefas:</Text>
+                </View>
+            
         </View>
+
     )
 }
 
@@ -18,7 +21,8 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center"
     },
-    semana: {
-
+    titulos: {
+        backgroundColor: "#000",
     },
+    
 })
