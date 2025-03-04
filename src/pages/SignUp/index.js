@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { View, Text, StyleSheet, TextInput, TouchableOpacity } from "react-native";
 import AntDesign from '@expo/vector-icons/AntDesign';
-import { auth } from '../../firebaseConnection'
+import { auth, db } from '../../firebaseConnection'
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { useNavigation } from '@react-navigation/native';
+import { getDoc, setDoc, doc } from "firebase/firestore";
 
 
 
@@ -13,19 +14,49 @@ export default function SignIn() {
     const [nome, setNome] = useState('')
     const [email, setEmail] = useState('')
     const [senha, setSenha] = useState('')
-    const [mensagemErro,setMensagemErro] = useState('')
-
+    const [mensagemErro, setMensagemErro] = useState('')
 
     async function criarUsuario() {
         if (senha.length < 6) {
             setMensagemErro('A senha deve ter pelo menos 6 caracteres.');
-          } else{
-            setMensagemErro('');
-            const user = await createUserWithEmailAndPassword(auth, email, senha)
-
-          }
+            return;
+        }
+    
+        setMensagemErro('');
+    
+        try {
+            // Criar usuário no Firebase Authentication
+            const userCredential = await createUserWithEmailAndPassword(auth, email, senha);
+            await new Promise(resolve => setTimeout(resolve, 1000)); // Aguardar 1 segundo para garantir atualização do usuário
+    
+            const user = auth.currentUser; // Atualiza a referência do usuário logado
+    
+            if (user) {
+                await id(user.uid); // Chama a função passando o UID do usuário criado
+                navigation.navigate('SignIn');
+            } else {
+                setMensagemErro('Erro ao obter UID do usuário. Tente novamente.');
+            }
+    
+        } catch (error) {
+            console.log("Erro ao criar usuário:", error);
+            setMensagemErro(error.message);
+        }
     }
-
+    
+    async function id(userId) {
+        try {
+            await setDoc(doc(db, "users", userId), {
+                nome: nome,
+                email: email,
+                senha: senha
+            });
+            console.log("Usuário salvo no Firestore com sucesso!");
+        } catch (error) {
+            console.log("Erro ao salvar no Firestore:", error);
+        }
+    }
+    
     return (
         <View style={styles.container}>
             <View style={styles.box}>
@@ -38,7 +69,7 @@ export default function SignIn() {
                         style={styles.boxInput}
                         placeholder="Nome:"
                         value={nome}
-                        onChangeText={(text)=>setNome(text)}
+                        onChangeText={(text) => setNome(text)}
                     />
                 </View>
 
@@ -48,7 +79,7 @@ export default function SignIn() {
                         style={styles.boxInput}
                         placeholder="Digite seu email:"
                         value={email}
-                        onChangeText={(text)=>setEmail(text)}
+                        onChangeText={(text) => setEmail(text)}
                     />
                 </View>
 
@@ -58,10 +89,10 @@ export default function SignIn() {
                         style={styles.boxInput}
                         placeholder="Digite sua senha:"
                         value={senha}
-                        onChangeText={(text)=>setSenha(text)}
+                        onChangeText={(text) => setSenha(text)}
                     />
                 </View>
-               <Text style={{ color: 'red', marginTop: 10 }}>{mensagemErro}</Text> 
+                <Text style={{ color: 'red', marginTop: 10 }}>{mensagemErro}</Text>
 
                 <TouchableOpacity style={styles.btnEntrar} onPress={criarUsuario}>
                     <Text style={styles.txtEntrar}>Criar conta</Text>
