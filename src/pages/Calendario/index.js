@@ -1,25 +1,31 @@
-import React, {useState, useContext}from "react";
-import {View, Text, TouchableOpacity} from "react-native";
-import {auth} from "../../firebaseConnection"
-import {signOut} from "firebase/auth";
-import {AuthContext} from "../../contexts/auth";
+import React, { useState, useContext } from "react";
+import { View, Text, TouchableOpacity } from "react-native";
+import { auth } from "../../firebaseConnection";
+import { signOut } from "firebase/auth";
+import { AuthContext } from "../../contexts/auth";
 
 export default function Calendario() {
+    const { setUser } = useContext(AuthContext);
 
-    async function sair(){
-        await signOut(auth)
-        setUserId({
-            email: '',
-            uid: '',
-            signed: false
-        })
-
+    async function sair() {
+        try {
+            await signOut(auth);
+            setUser({
+                email: '',
+                uid: '',
+                signed: false
+            });
+        } catch (error) {
+            console.log("Erro ao sair:", error);
+        }
     }
 
-    return(
+    return (
         <View>
-            <Text> calendario </Text>
-            <TouchableOpacity onPress={sair}> <Text>sair</Text></TouchableOpacity>
+            <Text> Calendário </Text>
+            <TouchableOpacity onPress={sair}>
+                <Text>Sair</Text>
+            </TouchableOpacity>
         </View>
-    )
+    );
 }

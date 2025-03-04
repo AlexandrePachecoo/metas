@@ -2,53 +2,52 @@ import { useState, useEffect, useContext } from "react";
 import { View, Text, StyleSheet, TextInput, TouchableOpacity } from "react-native";
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { auth } from '../../firebaseConnection'
-import { signInWithEmailAndPassword, onAuthStateChanged} from "firebase/auth";
+import { signInWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
 import { useNavigation } from '@react-navigation/native';
-import { AuthContext} from "../../contexts/auth";
- 
+import { AuthContext } from "../../contexts/auth";
 
 export default function SignIn() {
-
-    const navigation = useNavigation()
-    const {user, setUser} = useContext(AuthContext)
-    const [email, setEmail] = useState('')
-    const [senha, setSenha] = useState('')
-    const [mensagemErro, setMensagemErro] = useState('')
-
-    
+    const navigation = useNavigation();
+    const { user, setUser } = useContext(AuthContext);
+    const [email, setEmail] = useState('');
+    const [senha, setSenha] = useState('');
+    const [mensagemErro, setMensagemErro] = useState('');
 
     useEffect(() => {
-        const unsub = onAuthStateChanged(auth, (user) =>{
-            if(user){
+        const unsub = onAuthStateChanged(auth, (user) => {
+            if (user) {
                 setUser({
                     email: user.email,
                     uid: user.uid,
                     signed: true
-                })
+                });
             }
-        })
-    })
+        });
 
+        return () => unsub(); // Cancela a escuta quando o componente desmonta
+    }, []);
 
-     function login() {
+    async function login() {
+        try {
+            const userCredential = await signInWithEmailAndPassword(auth, email, senha);
+            const user = userCredential.user;
 
-        signInWithEmailAndPassword(auth, email, senha)
-        .then((user) => {
-            console.log(user.email)
             setUser({
                 email: user.email,
                 uid: user.uid,
                 signed: true
-            })
+            });
+
+            console.log("Usuário logado:", user.email);
+        } catch (error) {
+            setMensagemErro("Email ou senha incorretos!");
         }
-    )
-        .catch( ()=> {setMensagemErro("email ou senha incorreto!")} )
     }
 
     return (
         <View style={styles.container}>
             <View style={styles.box}>
-                <Text style={styles.titulo}>Bem vindo de volta!</Text>
+                <Text style={styles.titulo}>Bem-vindo de volta!</Text>
 
                 <View style={styles.input}>
                     <AntDesign name="user" size={25} color="#000" />
@@ -56,7 +55,9 @@ export default function SignIn() {
                         style={styles.boxInput}
                         placeholder="Digite seu email:"
                         value={email}
-                        onChangeText={(text) => setEmail(text)}
+                        onChangeText={setEmail}
+                        keyboardType="email-address"
+                        autoCapitalize="none"
                     />
                 </View>
 
@@ -66,27 +67,29 @@ export default function SignIn() {
                         style={styles.boxInput}
                         placeholder="Digite sua senha:"
                         value={senha}
-                        onChangeText={(text) => setSenha(text)}
+                        onChangeText={setSenha}
+                        secureTextEntry={true} // Esconde a senha
                     />
                 </View>
 
                 <TouchableOpacity style={styles.esqueceu}>
                     <Text>Esqueceu sua senha?</Text>
                 </TouchableOpacity>
-               <Text style={{ color: 'red', marginTop: 10 }}>{mensagemErro}</Text> 
+
+                {mensagemErro ? <Text style={{ color: 'red', marginTop: 10 }}>{mensagemErro}</Text> : null}
 
                 <TouchableOpacity style={styles.btnEntrar} onPress={login}>
                     <Text style={styles.txtEntrar}>Entrar</Text>
                 </TouchableOpacity>
-
             </View>
+
             <View style={styles.criarConta}>
                 <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
                     <Text> Não tem uma conta? <Text style={styles.criar}>Criar conta</Text></Text>
                 </TouchableOpacity>
             </View>
         </View>
-    )
+    );
 }
 
 const styles = StyleSheet.create({
@@ -94,8 +97,7 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#fff'
-
+        backgroundColor: '#fff',
     },
     titulo: {
         textAlign: 'center',
@@ -115,40 +117,38 @@ const styles = StyleSheet.create({
         borderColor: '#000',
         borderWidth: 1,
         marginTop: 20,
-        justifyContent: 'center',
-        alignItems: 'flex-start',
-        paddingLeft: 15,
-        paddingTop: 5
-
+        flexDirection: "row",
+        alignItems: "center",
+        paddingLeft: 15
     },
     boxInput: {
-        marginTop: -30,
-        marginLeft: 40,
-        width: 250,
-
+        flex: 1,
+        marginLeft: 10
     },
     btnEntrar: {
         backgroundColor: '#000',
         justifyContent: 'center',
+        alignItems: "center",
         height: 40,
         width: 129,
         borderRadius: 100,
         marginTop: 40
     },
     txtEntrar: {
-        textAlign: 'center',
-        color: "#fff"
+        color: "#fff",
+        fontSize: 16
     },
     esqueceu: {
-        marginRight: -150,
+        alignSelf: "flex-start",
+        marginLeft: 50,
         marginTop: 13
     },
     criar: {
         color: '#357CFF'
     },
     criarConta: {
-        alignItems: 'flex-end',
+        alignItems: 'center',
         justifyContent: 'flex-end',
         marginBottom: 15
     },
-})
+});
