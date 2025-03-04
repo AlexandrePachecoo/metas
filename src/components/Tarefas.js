@@ -1,25 +1,16 @@
-import React, { use, useState } from "react";
+import React, { use, useState, useEffect } from "react";
 import { View, Text, StyleSheet, FlatList } from "react-native";
 import { Checkbox } from "react-native-paper";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "../firebaseConnection";
+import { getAuth } from "firebase/auth";
+import { formatDate } from "date-fns";
 
 export default function Tarefas() {
 
     const [checked, setChecked] = useState({});
-    const tarefas = [{
-        id: 1,
-        nome: "estudar",
-        hora: "04:00",
-        vezes: "todos os dias",
-    },
-    {
-        id: 2,
-        nome: "trabalhar",
-        hora: "08:00",
-        vezes: "todos os dias",
+    const [tarefas, setTarefas] = useState([]);
 
-    },
-
-    ];
 
     const handleCheck = (id) => {
         setChecked(prevState => ({
@@ -29,6 +20,28 @@ export default function Tarefas() {
 
     };
 
+    useEffect(() => {
+        async function getDados() {
+            const user = getAuth().currentUser;
+            const userRef = collection(db, `users/${user.uid}/metas`);
+            getDocs(userRef)
+                .then((snapshot) => {
+                    let tarefas = [];
+                    snapshot.forEach((doc) => {
+                        tarefas.push(
+                            {
+                                id: doc.id,
+                                nome: doc.data().nome,
+                                hora: doc.data().hora,
+                                vezes: doc.data().repetição,
+                            }
+                        )
+                    })
+                    setTarefas(tarefas);
+                })
+        }
+        getDados();
+    }, [])
     return (
         <View style={styles.container}>
             <FlatList
@@ -38,17 +51,17 @@ export default function Tarefas() {
                     <View style={styles.tasks}>
                         <View style={styles.texts}>
                             <Text style={styles.nome}>{item.nome}</Text>
-                            <Text style={styles.hora}>{item.hora} • {item.vezes}</Text>
+                            <Text style={styles.hora}>{item.hora} •  a cada {item.vezes} dias</Text>
                         </View>
-                       
-                            <Checkbox
-                                status={checked[item.id] ? "checked" : "unchecked"}
-                                onPress={() => handleCheck(item.id)}
-                                style={styles.checkbox}
-                                color="#fff" // Cor quando marcado
-                                uncheckedColor="#fff" // Cor quando desmarcado
-                            />
-                        
+
+                        <Checkbox
+                            status={checked[item.id] ? "checked" : "unchecked"}
+                            onPress={() => handleCheck(item.id)}
+                            style={styles.checkbox}
+                            color="#fff" // Cor quando marcado
+                            uncheckedColor="#fff" // Cor quando desmarcado
+                        />
+
 
                     </View>
                 )}
@@ -92,7 +105,7 @@ const styles = StyleSheet.create({
     },
     checkbox: {
         backgroundColor: "#fff",
-        
+
     },
     checked: {
         backgroundColor: "#fff",
